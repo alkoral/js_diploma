@@ -1,15 +1,15 @@
 'use strict';
 
 class Vector {
-	constructor (x=0, y=0) {
+	constructor (x = 0, y = 0) {
 		this.x = x;
 		this.y = y
 	}
 
 	plus (vector) {
-		if(!(vector instanceof Vector)){
-			throw  new Error('Можно прибавлять к вектору только вектор типа Vector');
-		}
+		if (!(vector instanceof Vector)) {
+			throw new Error('Можно прибавлять к вектору только вектор типа Vector');
+			}
 		return new Vector(this.x + vector.x, this.y + vector.y);
 	}
 
@@ -74,7 +74,7 @@ class Actor {
 
 
 class Level {
-	constructor (grid=[], actors=[]) {
+	constructor (grid = [], actors = []) {
 		this.grid = grid;
 		this.actors = actors;
 		this.status = null;
@@ -114,7 +114,7 @@ class Level {
 			throw new Error('Аргумент отсутствует или не является движущимся объектом');
 		}
 
-		if (this.actors.length === 1 || this.grid === 'undefined') {
+		if (this.actors.length == 1 || this.grid === 'undefined') {
 			return undefined;
 		}
 
@@ -124,7 +124,7 @@ class Level {
 				}
 			}
 		return undefined;
-		}
+	}
 
 	obstacleAt (pos, size) {
 		if (!(pos instanceof Vector) || !(size instanceof Vector)) {
@@ -146,7 +146,7 @@ class Level {
 
 		for (let y = yTop; y < yBottom; y++) {
 			for (let x = xLeft; x < xRight; x++) {
-				const stopLine = this.grid[y][x];
+				let stopLine = this.grid[y][x];
 				if (typeof stopLine !== 'undefined') {
 					return stopLine;
 				}
@@ -163,7 +163,7 @@ class Level {
 	}
 
 	noMoreActors(type){
-		var actorOut = true;
+		let actorOut = true;
 		this.actors.forEach(function (actor){
 			if (actor.type === type) {
 				actorOut = false;
@@ -189,4 +189,8 @@ class Level {
 			}
 		}
 	}
+};
+
+class LevelParser {
+
 };
