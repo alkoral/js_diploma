@@ -796,6 +796,10 @@ console.log(`Текущая скорость: ${ball.speed.x}: ${ball.speed.y}`)
 
 Имеет свойство `type`, равное `player`.
 
+==
+
+Ссылка на работающую версию: https://Diploma--alkoral.repl.co
+
 [bitbucket]: https://bitbucket.org/
 [github]: https://github.com/
 [codepen]: https://codepen.io/
