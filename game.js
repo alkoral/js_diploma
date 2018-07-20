@@ -22,6 +22,7 @@ class Vector {
 class Actor {
 	constructor (pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
 		if (!(pos instanceof Vector)) {
+			// лучше писать название аргумента
 			throw new Error('Первый аргумент (расположение) не является объектом типа Vector');
 		}
 		if (!(size instanceof Vector)) {
@@ -61,10 +62,17 @@ class Actor {
 				throw new Error('Аргумент отсутствует или не является объектом типа Actor');
 			}
 
+			// не используйте == для сравеннеия,
+			// это может привести к ошибке при преобраозвании типов
+			// (используйте ===)
 			if (this == actor) {
 				return false;
 			}
 
+			// условие можно обратить и написать просто return <условие>
+			// чтобы обратить условине нужно заменить || на &&
+			// и все операторы на противоположные
+			// >= на <, <= на >
 			if (this.left >= actor.right || this.right <= actor.left || this.top >= actor.bottom || this.bottom <= actor.top) {
 				return false;
 			}
@@ -77,12 +85,16 @@ class Actor {
 
 class Level {
 	constructor (grid = [], actors = []) {
+		// здесь можно создать копии массивов,
+		// чтобы поля обхекта было сложнее изменить извне
 		this.grid = grid;
 		this.actors = actors;
 		this.status = null;
 		this.finishDelay = 1;
 
+		// у аргмента есть значение по умолчанию, проверку можно опустить
 		if (actors) {
+			// для поиска объектов в массиве есть сппециальный метод
 			for (let actor of actors) {
 				if (actor.type === 'player') {
 					this.player = actor;
@@ -90,14 +102,17 @@ class Level {
 			}
 		};
 
+		// лишняя проверка
 		if (this.grid.length > 0) {
 			this.height = this.grid.length;
+			// максимальная длина строки вычиляется некорректно
 			for (let elem of this.grid) {
 					if (typeof elem !== 'undefined') {
+						// код делает не то, что вы хотите
 						this.width = Math.max(elem.length);
 						}
 					}
-				}
+				} // форматирование
 			else {
 				this.height = 0;
 				this.width = 0;
@@ -105,6 +120,7 @@ class Level {
 	};
 
 	isFinished () {
+		// здесь можно написать просто return <выражение в if>
 		if (this.status != null && this.finishDelay < 0) {
 			return true;
 		}
@@ -116,15 +132,20 @@ class Level {
 			throw new Error('Аргумент отсутствует или не является движущимся объектом');
 		}
 
+		// лишняя проверка
 		if (this.actors.length == 1 || this.grid === 'undefined') {
 			return undefined;
 		}
 
+		// для поиска объектов в массиве есть специальный метод
 		for (let object of this.actors) {
+			// форматирование
 			if (actor.isIntersect(object)) {
 				return object;
 				}
 			}
+
+	  // лишняя строчка, функция возвращает undefined если не указано иное
 		return undefined;
 	}
 
@@ -133,6 +154,7 @@ class Level {
 			throw new Error('Аргумент не является объектом типа Vector');
 		}
 
+		// значение присваивается переменной 1 раз - лучше использовать const
 		let xLeft = Math.floor(pos.x);
 		let xRight = Math.ceil(pos.x + size.x);
 		let yTop = Math.floor(pos.y);
@@ -147,24 +169,29 @@ class Level {
 		}
 
 		for (let y = yTop; y < yBottom; y++) {
-			for (let x = xLeft; x < xRight; x++) {
+		 	for (let x = xLeft; x < xRight; x++) {
+		 		// const
 				let stopLine = this.grid[y][x];
+				// можно написать просто if (stopLine)
 				if (typeof stopLine !== 'undefined') {
 					return stopLine;
 				}
 			}
 		}
+		// лишняя строчка
 		return undefined;
 	 }
 
 	removeActor(actor){
 		const actorToRemove = this.actors.indexOf(actor);
+		// !==
 		if (actorToRemove != -1) {
 			this.actors.splice(actorToRemove, 1);
 		}
 	}
 
 	noMoreActors(type){
+		// тут лучше использовать метод some
 		let actorOut = true;
 		this.actors.forEach(function (actor){
 			if (actor.type === type) {
@@ -196,10 +223,12 @@ class Level {
 
 class LevelParser {
 	constructor (dictionary = {}) {
+		// можно создать копию объекта
 		this.dictionary = dictionary;
 	}
 
   actorFromSymbol(symbol) {
+		// лишняя проверка
   	if (!symbol || !this.dictionary[symbol]) {
   		return undefined;
   	}
@@ -207,6 +236,7 @@ class LevelParser {
   }
 
   obstacleFromSymbol(symbol) {
+		// лишняя проверка
     if (symbol) {
       if (symbol === 'x') {
         return 'wall';
@@ -214,11 +244,14 @@ class LevelParser {
       if (symbol === '!') {
         return 'lava';
       }
+      // лишняя строчка
       return undefined;
     }
   }
 
 	createGrid(gridPlan) {
+		// лучше использовать стрелочные функции
+		// вместо var лушче использвать let и const
 		var self = this;
 		return gridPlan.map(function (line) {
 			let newLine = [];
@@ -231,6 +264,7 @@ class LevelParser {
 
 	createActors(gridPlan) {
 		var self = this;
+		// стрелочные функции
 		return gridPlan.reduce(function (memo, ySymb, y) {
 			ySymb.split('').forEach(function (xSymb, x) {
 				let symb = self.actorFromSymbol(xSymb);
@@ -239,6 +273,7 @@ class LevelParser {
 					if (!(movingActor instanceof Actor)) {
 						return;
 						}
+						// в if return, поэтому else можно убрать
 					else {
 						memo.push(movingActor);
 					}
@@ -251,11 +286,13 @@ class LevelParser {
 	parse(gridPlan) {
 		return new Level(this.createGrid(gridPlan), this.createActors(gridPlan));
 	}
+	// точка с запятой лишняя
 }; // class LevelParser ends
 
 
 class Fireball extends Actor {
 	constructor (pos = new Vector(0, 0), speed = new Vector(0, 0)) {
+		// const
 		let size = new Vector(1, 1);
 		super(pos, size, speed);
 	};
@@ -313,6 +350,7 @@ class Coin extends Actor {
 		super (pos.plus(new Vector(0.2, 0.1)), new Vector(0.6, 0.6));
 		this.springSpeed = 8;
 		this.springDist = 0.07;
+		// random принимает 1 аргумент
 		this.spring = Math.random(0, Math.PI * 2);
 		this.startPos = this.pos;
 	}
