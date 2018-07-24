@@ -166,11 +166,7 @@ class LevelParser {
 	}
 
 	createGrid(gridPlan) {
-		return gridPlan.reduce((memo, elem) => {
-			const line = elem.split('').map(elem => this.obstacleFromSymbol(elem));
-			memo.push(line);
-			return memo;
-		}, []);
+		return gridPlan.map(elem => elem.split('').map(elem => this.obstacleFromSymbol(elem)));
 	}
 
 	createActors(gridPlan) {
@@ -181,7 +177,6 @@ class LevelParser {
 					const movingActor = new symb(new Vector(x, y));
 					if (movingActor instanceof Actor) {
 						memo.push(movingActor);
-						return memo;
 					}
 				}
 			});
@@ -214,7 +209,7 @@ class Fireball extends Actor {
 	}
 
 	act(time, gridNow) {
-		let newPos = this.getNextPosition(time);
+		const newPos = this.getNextPosition(time);
 		if (gridNow.obstacleAt(newPos, this.size)) {
 			this.handleObstacle();
 		} else {
@@ -268,7 +263,7 @@ class Coin extends Actor {
 	}
 
 	getSpringVector() {
-		let newPosY = Math.sin(this.spring) * this.springDist;
+		const newPosY = Math.sin(this.spring) * this.springDist;
 		return new Vector(0, newPosY);
 	}
 
