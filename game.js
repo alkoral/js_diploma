@@ -8,6 +8,7 @@ class Vector {
 
 	plus(vector) {
 		if (!(vector instanceof Vector)) {
+			// форматирование
 			throw new Error ('Можно прибавлять к вектору только вектор типа Vector');
 			}
 		return new Vector(this.x + vector.x, this.y + vector.y);
@@ -44,7 +45,7 @@ class Actor {
 
 	get left() {
 		return this.pos.x;
-	};
+	}; // точки с запятой в конце методов класса не нужны
 	get right() {
 		return this.pos.x + this.size.x;
 	};
@@ -79,7 +80,7 @@ class Actor {
 		// и все операторы на противоположные
 		// >= на <, <= на >
 		// АК: Логично - так короче, спасибо :-)
-
+		// внешние скобки можно опустить
 		return (this.left < actor.right && this.right > actor.left && this.top < actor.bottom && this.bottom > actor.top);
 	}
 }
@@ -97,6 +98,7 @@ class Level {
 		// у аргмента есть значение по умолчанию, проверку можно опустить
 		// для поиска объектов в массиве есть сппециальный метод
 		// АК: применил метод find()
+		// тут лучше использовать стрелочную функцию
 		this.player = this.actors.find(function (elem) {
 			return elem.type === 'player';
 		});
@@ -104,15 +106,20 @@ class Level {
 		this.height = grid.length;
 		// лишняя проверка & некорректное вычисление длины строки
 		// АК: решено по-новому
+		// название yLength не очень подходит содержанию
+		// ведь в переменной массив
+		// стрелочная фукнция здесь лучше подходит
 		const yLength = grid.map(function (elem) {
 			return elem.length;
 		});
+		// вот это правильно
 		this.width = Math.max(0, ...yLength);
 	};
 
 	isFinished () {
 		// здесь можно написать просто return <выражение в if>
 		// АК: исправил
+		// внешние скобки можно опустить
 		return (this.status != null && this.finishDelay < 0);
 	};
 
@@ -126,6 +133,7 @@ class Level {
 
 		// для поиска объектов в массиве есть специальный метод
 		// АК: использовал метод find()
+		// стрелочная функция
 		return this.actors.find(function (elem) {
 			return elem.isIntersect(actor);
 		});
@@ -178,6 +186,7 @@ class Level {
 	noMoreActors(type){
 		// тут лучше использовать метод some
 		// АК: использовал
+		// стрелочная функция
 		return !this.actors.some(function (elem) {
 			return elem.type === type;
 		})
@@ -234,6 +243,7 @@ class LevelParser {
 		return gridPlan.reduce((memo, elem) => {
 			const line = elem.split('')
 				.map(elem => this.obstacleFromSymbol(elem));
+				// форматирование
 			memo.push(line);
 			return memo;
 		}, []);
@@ -245,8 +255,10 @@ class LevelParser {
 
 		return gridPlan.reduce((memo, ySymb, y) => {
 			ySymb.split('').forEach((xSymb, x) => {
+				// значение присваивается переменой 1 раз - используйте const
 				let symb = this.actorFromSymbol(xSymb);
 				if (typeof symb === 'function') {
+					// const
 					let movingActor = new symb(new Vector(x, y));
 					if (movingActor instanceof Actor) {
 						memo.push(movingActor);
@@ -360,6 +372,8 @@ class Coin extends Actor {
 
 class Player extends Actor {
 	constructor (pos = new Vector(0, 0)) {
+		// здесь лучше задать все аргументы, потому что неизвестно какое
+		// значение по-умолчнию может оказаться у speed в классе Actor
 		super(pos.plus(new Vector(0, -0.5)), new Vector(0.8, 1.5));		// speed vector remains the same, i.e (0, 0)
 	}
 
